@@ -5,12 +5,12 @@ import java.util.Scanner;
 
 public class UI {
     public UI(Library library) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in); // Console input.
 
-        String state = "init";
+        String state = "init"; // State machine.
 
-        while (!state.equals("quit")) {
-            state = tick(state, scanner, library);
+        while (!state.equals("quit")) { // Allow quiting the loop.
+            state = tick(state, scanner, library); // Tick the program and update state machine.
         }
 
         System.out.println("Program ended. Library reset.");
@@ -20,12 +20,12 @@ public class UI {
         String input;
 
         switch (state) {
-            case "init": {
+            case "init": { // State Init
                 System.out.println("Select your choice\n(1) List Available Books\n(2) List All Books\n(3) Borrow Or Return Book\n(4) List Members\n(5) Quit");
-                input = scanner.nextLine();
+                input = scanner.nextLine(); // Get input.
 
-                try {
-                    int choice = Integer.parseInt(input);
+                try { // Avoid crashes
+                    int choice = Integer.parseInt(input); // Turn into a number for switch.
                     switch (choice) {
                         case 1:
                             listAvailableBooks(library);
@@ -34,7 +34,7 @@ public class UI {
                             listAllBooks(library);
                             break;
                         case 3:
-                            return "borrowReturn";
+                            return "borrowReturn"; // Change state to borrow/return state.
                         case 4:
                             listMembers(library);
                             break;
@@ -45,12 +45,12 @@ public class UI {
                             System.out.println("\nInvalid choice. Pick a number 1-5.");
                     }
 
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException e) { // Catch the errors and inform next choice.
                     System.out.println("\nInvalid choice. Pick a number 1-5.");
                 }
                 break;
             }
-            case "borrowReturn": {
+            case "borrowReturn": { // State Borrow/Return. This is just asking if you want to borrow or return.
                 System.out.println();
                 System.out.println("Do you want to borrow or return a book?\n(1) Borrow\n(2) Return\n(3) Go Back");
                 input = scanner.nextLine();
@@ -76,28 +76,28 @@ public class UI {
 
                 break;
             }
-            case "borrow": {
-                Member member = askID(scanner, library);
+            case "borrow": { // State Borrow
+                Member member = askID(scanner, library); // Get member from supplied ID.
 
-                if (member != null) {
+                if (member != null) { // Ensure member exists.
                     System.out.println("\nWhat book do you want to borrow?");
 
                     System.out.println("Available Books:");
                     ArrayList<Book> books = library.getBooks();
-                    books.removeIf(b -> !b.isAvailable());
+                    books.removeIf(b -> !b.isAvailable()); // Remove unavailable books.
 
-                    for (int bI = 0; bI < books.size(); bI++) {
+                    for (int bI = 0; bI < books.size(); bI++) { // Loop through all books.
                         Book book = books.get(bI);
                         System.out.println("(" + (bI + 1) + ") " + book.getTitle() + " by " + book.getAuthor());
                     }
-                    System.out.println("(" + (books.size()+1) + ") Back");
+                    System.out.println("(" + (books.size()+1) + ") Back"); // Create a 'Back' button.
 
                     input = scanner.nextLine();
                     try {
                         int choice = Integer.parseInt(input);
-                        if (choice > 0 && choice-1 < books.size()) {
+                        if (choice > 0 && choice-1 < books.size()) { // Ensure range.
                             Book book = books.get(choice - 1);
-                            member.borrowBook(book.getTitle(), library);
+                            member.borrowBook(book.getTitle(), library); // Borrow book.
                             System.out.println("\nBook Borrowed!");
                             return "init";
                         } else if (choice-1 == books.size()) {
@@ -148,7 +148,7 @@ public class UI {
                 break;
             }
             default: {
-                System.out.println("Fatal Error! Returning to main menu.");
+                System.out.println("Fatal Error! Returning to main menu."); // State machine broken somehow. Fixing by returning to main menu. Very unlikely if possible.
                 return "init";
             }
         }
